@@ -10,5 +10,23 @@
     "spinner"
   ],
   "author": "Andy Garvin",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "jss": "9.8.7",
+    "jss-plugin-nested": "10.0.0-alpha.7"
+  },
+  "devDependencies": {
+    "babel-core": "6.26.3",
+    "babel-preset-es2015": "6.24.1",
+    "babelify": "8.x.x",
+    "browserify": "16.2.3",
+    "gulp": "4.0.2",
+    "gulp-plumber": "1.2.1",
+    "gulp-rename": "^1.4.0",
+    "gulp-sourcemaps": "2.6.5",
+    "gulp-uglify": "3.0.2",
+    "gulplog": "1.0.0",
+    "vinyl-buffer": "1.0.1",
+    "vinyl-source-stream": "2.0.0"
+  }
 }

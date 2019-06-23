@@ -28,6 +28,10 @@ var opts = {
     {
       color: 'black'
     }
+  ,
+    {
+      color: 'pink'
+    }
   ]
 ,
   onFinish: function(segment) {

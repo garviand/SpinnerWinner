@@ -17,6 +17,17 @@ function WinnerSpinner(opts) {
   var duration = generateDuration();
 
   var styles = {
+    "container" : {
+      "width": "200px"
+    },
+    "arrow" : {
+      "margin": "0 auto",
+      "width": "0", 
+      "height": "0",
+      "border-left": "10px solid transparent",
+      "border-right": "10px solid transparent",
+      "border-top": "20px solid #CCC"
+    },
     "pie": {
       "border-radius": "100%",
       "height": '200px',
@@ -70,15 +81,23 @@ function WinnerSpinner(opts) {
 
   var stylesheet = jss.createStyleSheet(styles).attach()
 
+  var body = document.getElementsByTagName('body')[0];
+  var container = document.createElement('div');
+  container.classList.add(stylesheet.classes.container);
+  body.appendChild(container);
+
+  var arrow = document.createElement('div');
+  arrow.classList.add(stylesheet.classes.arrow);
+  container.appendChild(arrow);
+
   var pie = document.createElement('div');
   pie.classList.add(stylesheet.classes.pie);
-  body = document.getElementsByTagName('body')[0];
-  body.appendChild(pie);
+  container.appendChild(pie);
 
   for (var i = opts.segments.length - 1; i >= 0; i--) {
     var segment = opts.segments[i];
     var node = document.createElement('div');
-    node.classList.add('pie__segment-0-1-2');
+    node.classList.add(stylesheet.classes['pie__segment']);
     node.style.cssText = '--offset: ' + (100 / opts.segments.length * i).toFixed(2) + '; --value: ' + (100 / opts.segments.length).toFixed(2) + '; --bg: ' + segment.color + ';'
     pie.appendChild(node);
   }

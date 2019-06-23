@@ -1,0 +1,14 @@
+{
+  "name": "spinnerwinner",
+  "version": "1.0.0",
+  "description": "Spinner component that allows for custom actions depending on when the spinner stops",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "spinner"
+  ],
+  "author": "Andy Garvin",
+  "license": "ISC"
+}

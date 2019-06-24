@@ -1,20 +1,16 @@
 var jss = require('jss').create();
-var jssNested = require('jss-plugin-nested');
+var jssPreset = require('jss-preset-default');
 
 function WinnerSpinner(opts) {
 
-  function generateRotation() {
-    return Math.round(Math.random() * 4000 + (360 * 5));
-  }
+  this.selectedSegment = null;
+  this.segments = opts.segments;
+  this.pie = null;
+  this.stylesheet = null;
+  this.rotation = 0;
+  this.isSpinning = false;
 
-  function generateDuration() {
-    return Math.round(Math.random() * 3000 + 2000);
-  }
-
-  jss.use(jssNested.default());
-
-  var rotation = generateRotation();
-  var duration = generateDuration();
+  jss.setup(jssPreset.default());
 
   var styles = {
     "container" : {
@@ -34,6 +30,20 @@ function WinnerSpinner(opts) {
       "width": '200px',
       "overflow": "hidden",
       "position": "relative"
+    },
+    "spinning": {
+      "animation-name": function(data) {
+        return data.animation
+      },
+      "animation-duration": function(data) {
+        return data.duration + "ms"
+      },
+      "transform": function(data) {
+        return data.transform
+      },
+      "animation-iteration-count": "1",
+      "animation-timing-function": "ease-in-out",
+      "animation-fill-mode": "forwards"
     },
     "pie__segment": {
       "--a": "-100%",
@@ -61,61 +71,85 @@ function WinnerSpinner(opts) {
         "transform": "translate(0, 100%) rotate(calc(var(--degrees) * 1deg))",
         "transform-origin": "50% 0%"
       }
-    },
-    "spinning": {
-      "animation-name": "spin",
-      "animation-duration": duration + "ms",
-      "animation-iteration-count": "1",
-      "animation-timing-function": "ease-in-out",
-      "animation-fill-mode": "forwards"
-    },
-    "@keyframes spin": {
-      "from": {
-        "transform": "rotate(0deg)"
-      },
-      "to": {
-        "transform": "rotate(" + rotation +  "deg)"
-      }
     }
   }
 
-  var stylesheet = jss.createStyleSheet(styles).attach()
+  this.stylesheet = jss.createStyleSheet(styles, {link: true}).attach();
 
   var body = document.getElementsByTagName('body')[0];
   var container = document.createElement('div');
-  container.classList.add(stylesheet.classes.container);
+  container.classList.add(this.stylesheet.classes.container);
   body.appendChild(container);
 
   var arrow = document.createElement('div');
-  arrow.classList.add(stylesheet.classes.arrow);
+  arrow.classList.add(this.stylesheet.classes.arrow);
   container.appendChild(arrow);
 
-  var pie = document.createElement('div');
-  pie.classList.add(stylesheet.classes.pie);
-  container.appendChild(pie);
+  this.pie = document.createElement('div');
+  this.pie.classList.add(this.stylesheet.classes.pie);
+  container.appendChild(this.pie);
 
   for (var i = opts.segments.length - 1; i >= 0; i--) {
     var segment = opts.segments[i];
     var node = document.createElement('div');
-    node.classList.add(stylesheet.classes['pie__segment']);
+    node.classList.add(this.stylesheet.classes['pie__segment']);
     node.style.cssText = '--offset: ' + (100 / opts.segments.length * i).toFixed(2) + '; --value: ' + (100 / opts.segments.length).toFixed(2) + '; --bg: ' + segment.color + ';'
-    pie.appendChild(node);
+    this.pie.appendChild(node);
   }
 
-  pie.classList.add(stylesheet.classes.spinning);
+}
+
+WinnerSpinner.prototype.spin = function() {
+
+  if (this.isSpinning) {
+    return
+  }
+
+  this.isSpinning = true;
+
+  var rotation = Math.round(Math.random() * 4000 + (360 * 5)) + this.rotation;
+  var duration = Math.round(Math.random() * 3000 + 2000);
+
+  this.stylesheet.update('spinning', {
+    "duration": duration,
+    "animation": "spin"
+  });
+
+  this.stylesheet.deleteRule('@keyframes spin');
+
+  this.stylesheet.addRule('@keyframes spin', {
+    "from": {
+      "transform": "rotate(" + this.rotation + "deg)"
+    },
+    "to": {
+      "transform": "rotate(" + rotation + "deg)"
+    }
+  });
+
+  this.rotation = rotation;
+
+  this.pie.classList.add(this.stylesheet.classes.spinning);
 
   absRotation = rotation % 360;
   degreesPerSegment = 360 / opts.segments.length
   selectedSegmentIndex = Math.floor(absRotation / degreesPerSegment);
+  selectedSegment = opts.segments[(opts.segments.length - 1) - selectedSegmentIndex]
+  this.selectedSegment = selectedSegment;
 
+  _this = this;
   setTimeout(function(){
-    var selectedSegment = opts.segments[(opts.segments.length - 1) - selectedSegmentIndex]
     if (typeof selectedSegment.onSelected === "function") { 
       selectedSegment.onSelected(selectedSegment); 
     }
     else if (typeof opts.onFinish === "function") { 
       opts.onFinish(selectedSegment); 
     }
+    _this.stylesheet.update('spinning', {
+      "duration": duration,
+      "animation": "",
+      "transform": "rotate(" + rotation + "deg)"
+    });
+    _this.isSpinning = false;
   }, duration);
 }
 

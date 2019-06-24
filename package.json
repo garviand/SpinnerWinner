@@ -13,7 +13,8 @@
   "license": "ISC",
   "dependencies": {
     "jss": "9.8.7",
-    "jss-plugin-nested": "10.0.0-alpha.7"
+    "jss-plugin-nested": "10.0.0-alpha.7",
+    "jss-preset-default": "4.5.0"
   },
   "devDependencies": {
     "babel-core": "6.26.3",

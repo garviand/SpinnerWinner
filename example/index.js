@@ -39,4 +39,8 @@ var opts = {
   }
 }
 
-WinnerSpinner(opts);
+var spinner = new WinnerSpinner(opts);
+
+function spin(){
+  spinner.spin();
+}
